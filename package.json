@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "convert-array-to-csv": "^2.0.0"
+    "convert-array-to-csv": "^2.0.0",
+    "csv-excel-to-json": "^1.0.1"
   }
 }
