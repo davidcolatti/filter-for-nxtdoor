@@ -1,30 +1,25 @@
 const fs = require("fs");
-const csvOrExcel = require("csv-excel-to-json");
-const { convertArrayToCSV } = require("convert-array-to-csv");
-
-const keywords = fs.readFileSync("keywords.txt").toString().split("\r\n");
-
-const writeJson = () => {
-  csvOrExcel.convertToJson("./data.csv", "./data.json");
-};
+const { csvFileToArray, arrayToCsvFile } = require("csv-to-and-from-array");
 
 const main = async () => {
-  writeJson();
+  const keywords = fs.readFileSync(`keywords.txt`).toString().split("\r\n");
 
-  let data;
-  await setTimeout(async () => {
-    data = require("./data.json");
+  const data = await csvFileToArray({ filePath: "./data.csv" });
 
-    const filteredData = data.filter((lead) => {
-      return !!keywords.find((word) => lead.category === word);
-    });
+  const filteredData = data.filter((lead) => {
+    return !!keywords.find(
+      (word) => lead.category === word && !!lead.phone_number
+    );
+  });
 
-    console.log(`Found ${filteredData.length} out of ${data.length}`);
-
-    const csv = await convertArrayToCSV(filteredData);
-
-    fs.writeFile("./output.csv", csv, () => {});
-  }, 500);
+  arrayToCsvFile({
+    data: filteredData,
+    filePath: `./output.csv`,
+    callback: () =>
+      console.log(`Found ${filteredData.length} out of ${data.length}`),
+  });
 };
 
-main();
+const types = ["nextdoor", "other"];
+
+main(types[0]);
